@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import openai
+from openai import OpenAI
 import os
 
 app = FastAPI()
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,7 +24,7 @@ async def root():
 
 @app.post('/chat')
 async def chat(question: Question):
-    completion = openai.ChatCompletion.create(
+    completion = client.chat.completions.create(
         model='gpt-3.5-turbo',
         messages=[{'role': 'user', 'content': question.prompt}]
     )
